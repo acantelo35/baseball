@@ -1,3 +1,0 @@
-const playerOPS = obp + slg;
-const adjustedOPS = playerOPS / (pf / 100);
-const opsPlus = 100 * (adjustedOPS / leagueOPS);
