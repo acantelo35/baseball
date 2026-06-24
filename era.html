@@ -4,10 +4,28 @@
     <meta charset="UTF-8">
     <title>ERA+ Calculator</title>
     <style>
-        body { font-family: Arial; max-width: 700px; margin: 40px auto; padding: 20px; }
-        input, select, button { padding: 10px; margin-top: 10px; width: 100%; font-size: 16px; }
-        #result { margin-top: 20px; font-size: 24px; font-weight: bold; }
-        a { display: block; margin-bottom: 20px; }
+        body { 
+            font-family: Arial; 
+            max-width: 700px; 
+            margin: 40px auto; 
+            padding: 20px; 
+        }
+        input, select, button { 
+            padding: 10px; 
+            margin-top: 10px; 
+            width: 100%; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+        }
+        #result { 
+            margin-top: 20px; 
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+        a { 
+            display: block; 
+            margin-bottom: 20px; 
+        }
     </style>
 </head>
 <body>
@@ -16,7 +34,7 @@
 <h2>D1 Baseball ERA+ Calculator</h2>
 
 <label>Your ERA:</label>
-<input type="number" id="era" step="0.01" placeholder="Enter ERA">
+<input type="number" id="era" step="0.01" placeholder="Enter ERA (e.g. 3.25)">
 
 <label>Select School:</label>
 <select id="school"></select>
@@ -26,14 +44,12 @@
 <div id="result"></div>
 
 <script>
-// === PARK FACTORS JSON ===
-// Paste your full parkFactors object here, e.g.:
-// const parkFactors = { "Air Force":145, "Morehead":142, ... };
+// === FULL PARK FACTOR DATASET ===
 const parkFactors = {
-    "Air Force":145,"Morehead":142,"Nevada":135,"Appalachian St.":135,"New Mexico":134,"CSUN":132,"WCU":130,"Columbia":130,"Utah Valley":128,"Ball State":128,"Richmond":127,"BYU":127,"NM State":126,"Hartford":125,"Delaware":124,"UMBC":123,"Coastal Carolina":123,"Marist":122,"ACU":122,"Texas State":120,"Penn State":120,"Ole Miss":120,"HCU":120,"Georgia Tech":120,"UT Martin":119,"Prairie View":119,"Oakland":119,"NKU":119,"Austin Peay":119,"Virginia":118,"Northern CO":118,"UMass":118,"Bryant":118,"Valparaiso":117,"Texas":117,"Tennessee":117,"Harvard":117,"Canisius":117,"Texas Tech":116,"Kennesaw":116,"Kansas":116,"Rice":115,"Pacific":115,"Longwood":115,"Indiana":115,"VMI":114,"Pittsburgh":114,"Northern IL":114,"The Mount":114,"JMU":114,"Youngstown":113,"Albany":113,"Saint Peter's":113,"Grambling":113,"CSUB":113,"Xavier":112,"Santa Clara":112,"Mississippi St.":112,"LSU":112,"Illinois":112,"W&M":111,"Rider":111,"Fort Wayne":111,"ND State":111,"LMU":111,"Dayton":111,"Brown":111,"Utah":110,"North FL":110,"Iowa":110,"CSU":110,"Washington St.":109,"UNLV":109,"Quinnipiac":109,"Oklahoma":109,"Cincinnati":109,"Auburn":109,"SIUE":108,"Missouri":108,"Mercer":108,"Louisville":108,"East Carolina":108,"BGSU":108,"UC Riverside":107,"TN Tech":107,"Bonaventure":107,"San Diego":107,"Sacred Heart":107,"Eastern IL":107,"Charleston":107,"Arizona":107,"Wichita St.":106,"Upstate":106,"SD State":106,"SFA":106,"New Orleans":106,"Michigan":106,"Georgetown":106,"Florida":106,"California":106,"UIW":105,"SE Louisiana":105,"SEMO":105,"SHSU":105,"Nebraska":105,"Hofstra":105,"GA State":105,"Fla. Atlantic":105,"Boston College":105,"Virginia Tech":104,"UCLA":104,"Troy":104,"Toledo":104,"Radford":104,"Maryland":104,"Davidson":104,"Dallas Baptist":104,"Coppin":104,"Asheville":103,"ODU":103,"Navy":103,"Middle TN":103,"LA Tech":103,"EKU":103,"Central CT":103,"Alabama":103,"Winthrop":102,"Wake Forest":102,"Southern":102,"Southern IL":102,"Penn":102,"Murray St.":102,"MS Valley":102,"Manhattan":102,"Lipscomb":102,"Liberty":102,"Kentucky":102,"Kent State":102,"FIU":102,"Elon":102,"Charlotte":102,"Cal Poly":102,"Alcorn":102,"TX Southern":101,"Savannah St.":101,"Portland":101,"Oklahoma St.":101,"NC A&T":101,"Memphis":101,"Lafayette":101,"Kansas St.":101,"Georgia":101,"George Wash.":101,"FDU":101,"Arkansas":101,"Arizona St.":101,"Western IL":100,"UCF":100,"TCU":100,"South Carolina":100,"NW State":100,"McNeese":100,"La Salle":100,"Florida St.":100,"ETSU":100,"Delaware St.":100,"Central AR":100,"Army":100,"UTSA":99,"UC Davis":99,"Ohio State":99,"NC State":99,"Miami (FL)":99,"Marshall":99,"Houston":99,"Florida A&M":99,"UConn":98,"Salem":98,"URI":98,"Purdue":98,"Oregon St.":98,"Mason":98,"Baylor":98,"Alabama St.":98,"UNCG":97,"UM Lowell":97,"St. John's":97,"Rutgers":97,"Princeton":97,"Ohio":97,"NC Central":97,"High Point":97,"FGCU":97,"Evansville":97,"Duke":97,"CS Fullerton":97,"Western MI":96,"Towson":96,"Stony Brook":96,"USF":96,"GCU":96,"Eastern MI":96,"Cornell":96,"Clemson":96,"Bucknell":96,"AL A&M":96,"Wofford":95,"Jackson St.":95,"Holy Cross":95,"Butler":95,"West Virginia":94,"UAB":94,"UNC":94,"Niagara":94,"Missouri St.":94,"Washington":93,"UC Irvine":93,"Tulane":93,"Texas A&M":93,"Stetson":93,"San Fran.":93,"Notre Dame":93,"Monmouth":93,"Minnesota":93,"LIU":93,"Ga. Southern":93,"Fairfield":93,"Cookman":93,"Wright St.":92,"Western Ky.":92,"Vanderbilt":92,"ULM":92,"Stanford":92,"Siena":92,"Indiana St.":92,"St. Joseph's":91,"NJIT":91,"Milwaukee":91,"Miami OH":91,"Little Rock":91,"Jacksonville":91,"UMES":90,"USC":90,"Omaha":90,"N-Western":90,"Nicholls":90,"Jacksonville St.":90,"Iona":90,"Gard.-Webb":90,"Belmont":90,"Arkansas St.":90,"Southern Miss":89,"Oral Roberts":89,"Michigan St.":89,"Citadel":88,"Samford":88,"Saint Mary's":88,"Louisiana":88,"Fresno St.":88,"Dartmouth":88,"UC Santa Barbara":87,"Seattle":87,"Gonzaga":87,"Central MI":87,"Bradley":87,"Binghamton":87,"Wagner":86,"South AL":86,"Lehigh":86,"Hawaii":86,"UTRGV":85,"UNCW":85,"San Jose St.":85,"Presbyterian":85,"Fordham":85,"Campbell":85,"Texas A&M-CC":85,"Charles Schwab Field (Omaha)":85,"UT Arlington":84,"UIC":84,"San Diego St.":84,"Illinois St.":84,"Creighton":84,"Saint Louis":83,"Norfolk St.":83,"Sac State":82,"VCU":81,"Pepperdine":81,"Lamar":81,"Pine Bluff":81,"Villanova":80,"N-Eastern":80,"Oregon":79,"Maine":79,"Seton Hall":78,"Yale":76,"Long Beach":75
+"Air Force":145,"Alabama":103,"Alabama St.":98,"Albany":113,"Alcorn":102,"Appalachian St.":135,"Arizona":107,"Arizona St.":101,"Arkansas":101,"Arkansas St.":90,"Army":100,"Asheville":103,"Austin Peay":119,"Baylor":98,"Ball State":128,"Belmont":90,"Binghamton":87,"BGSU":108,"Boston College":105,"Bradley":87,"Brown":111,"Bryant":118,"Bucknell":96,"Butler":95,"BYU":127,"Cal Poly":102,"California":106,"Campbell":85,"Canisius":117,"Central AR":100,"Central CT":103,"Central MI":87,"Charlotte":102,"Charleston":107,"Cincinnati":109,"Citadel":88,"Clemson":96,"Coastal Carolina":123,"Columbia":130,"Cookman":93,"Coppin":104,"Cornell":96,"Creighton":84,"CS Fullerton":97,"CSUB":113,"CSU":110,"CSUN":132,"Dartmouth":88,"Davidson":104,"Dayton":111,"Delaware":124,"Delaware St.":100,"Duke":97,"East Carolina":108,"Eastern IL":107,"Eastern MI":96,"EKU":103,"Elon":102,"ETSU":100,"Evansville":97,"Fairfield":93,"FDU":101,"FIU":102,"Florida":106,"Florida A&M":99,"Florida St.":100,"Fordham":85,"Fort Wayne":111,"Fresno St.":88,"Ga. Southern":93,"GA State":105,"Gard.-Webb":90,"Georgetown":106,"George Wash.":101,"Georgia":101,"Georgia Tech":120,"Gonzaga":87,"Grambling":113,"Hawaii":86,"Harvard":117,"Hartford":125,"HCU":120,"High Point":97,"Hofstra":105,"Holy Cross":95,"Houston":99,"Illinois":112,"Illinois St.":84,"Indiana":115,"Indiana St.":92,"Iona":90,"Iowa":110,"Jackson St.":95,"Jacksonville":91,"Jacksonville St.":90,"JMU":114,"Kansas":116,"Kansas St.":101,"Kennesaw":116,"Kent State":102,"Kentucky":102,"La Salle":100,"Lafayette":101,"Lamar":81,"Lehigh":86,"Liberty":102,"Lipscomb":102,"LIU":93,"LMU":111,"Long Beach":75,"Longwood":115,"Louisiana":88,"Louisville":108,"LSU":112,"Maine":79,"Manhattan":102,"Marist":122,"Marshall":99,"Maryland":104,"Massachusetts":118,"McNeese":100,"Memphis":101,"Mercer":108,"Miami (FL)":99,"Miami OH":91,"Michigan":106,"Michigan St.":89,"Middle TN":103,"Milwaukee":91,"Minnesota":93,"Mississippi St.":112,"Missouri":108,"Missouri St.":94,"Monmouth":93,"Morehead":142,"Murray St.":102,"Navy":103,"NC A&T":101,"NC Central":97,"NC State":99,"Nebraska":105,"Nevada":135,"New Mexico":134,"New Orleans":106,"Niagara":94,"Nicholls":90,"NJIT":91,"NM State":126,"North FL":110,"N-Western":90,"Northern CO":118,"Northern IL":114,"Notre Dame":93,"Oakland":119,"Ohio":97,"Ohio State":99,"Oklahoma":109,"Oklahoma St.":101,"Old Dominion":103,"Ole Miss":120,"Omaha":90,"Oregon":79,"Oregon St.":98,"Oral Roberts":89,"Pacific":115,"Penn":102,"Penn State":120,"Pepperdine":81,"Pine Bluff":81,"Pittsburgh":114,"Portland":101,"Prairie View":119,"Presbyterian":85,"Princeton":97,"Purdue":98,"Quinnipiac":109,"Radford":104,"Rhode Island":98,"Rice":115,"Richmond":127,"Rider":111,"Rutgers":97,"Sac State":82,"Sacred Heart":107,"Saint Louis":83,"Saint Mary's":88,"Saint Peter's":113,"Salem":98,"Samford":88,"San Diego":107,"San Diego St.":84,"San Fran.":93,"San Jose St.":85,"Santa Clara":112,"Savannah St.":101,"SE Louisiana":105,"SEMO":105,"Seton Hall":78,"SFA":106,"Siena":92,"SIUE":108,"South AL":86,"South Carolina":100,"SD State":106,"Southern":102,"Southern IL":102,"Southern Miss":89,"St. Bonaventure":107,"St. John's":97,"St. Joseph's":91,"Stanford":92,"Stetson":93,"Stony Brook":96,"TCU":100,"Tennessee":117,"Texas":117,"Texas A&M":93,"Texas A&M-CC":85,"Texas Southern":101,"Texas St.":120,"Texas Tech":116,"The Mount":114,"Toledo":104,"Towson":96,"Troy":104,"Tulane":93,"UAB":94,"UCF":100,"UCLA":104,"UConn":98,"UIC":84,"ULM":92,"UMass":118,"UMBC":123,"UMES":90,"UNC":94,"UNCW":85,"UNCG":97,"UNLV":109,"USC":90,"USF":96,"Utah":110,"Utah Valley":128,"UT Arlington":84,"UT Martin":119,"UTRGV":85,"UTSA":99,"Valparaiso":117,"Vanderbilt":92,"VCU":81,"Villanova":80,"Virginia":118,"Virginia Tech":104,"VMI":114,"W&M":111,"Wagner":86,"Wake Forest":102,"Washington":93,"Washington St.":109,"West Virginia":94,"Western IL":100,"Western Ky.":92,"Western MI":96,"Wichita St.":106,"Winthrop":102,"Wofford":95,"Wright St.":92,"Xavier":112,"Yale":76,"Youngstown":113
 };
 
-// Populate dropdown alphabetically
+// === POPULATE DROPDOWN ALPHABETICALLY ===
 const dropdown = document.getElementById("school");
 dropdown.innerHTML = "<option value=''>-- Select School --</option>";
 
@@ -44,14 +60,14 @@ Object.keys(parkFactors).sort().forEach(school => {
     dropdown.appendChild(opt);
 });
 
-// ERA+ calculation
+// === ERA+ CALCULATION ===
 function calculateERAPlus() {
     const era = parseFloat(document.getElementById("era").value);
     const pf = parseFloat(document.getElementById("school").value);
     const leagueERA = 5.42;
 
     if (!era || !pf) {
-        document.getElementById("result").innerHTML = "Enter ERA and select a school.";
+        document.getElementById("result").innerHTML = "Please enter an ERA and select a school.";
         return;
     }
 
